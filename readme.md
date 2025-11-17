@@ -28,7 +28,9 @@ Geoad: Towards Geospatial Foundation Models via Efficient Continual Pre-Training
 
 ### 🔍️🔍️ NEWS
 
-- [2025/11/17] ✨✨ The [arxiv] paper will coming soon.
+- [2025/11/17] ✨✨ Init Repo.
+
+[//]: # (- [2025/11/17] ✨✨ The [arxiv] paper will coming soon.)
 
 
 ### 📄📄 TODO
@@ -124,3 +126,20 @@ Torch and torchvision versions relationship.
 
 [![Official Repo](https://img.shields.io/badge/Pytorch-vision_refer-EE4C2C?logo=pytorch)](https://github.com/pytorch/vision#installation)
 [![CSDN](https://img.shields.io/badge/CSDN-vision_refer-FC5531?logo=csdn)](https://blog.csdn.net/shiwanghualuo/article/details/122860521)
+
+
+
+
+## Acknowledgements
+This project is built upon [OpenMMLab](https://openmmlab.com/codebase). We thank the OpenMMLab developers.
+
+## Citation
+If you use Geoad in your research, please cite:
+```bibtex
+@article{,
+  title={},
+  author={},
+  journal={},
+  year={}
+}
+```
