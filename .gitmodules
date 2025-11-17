@@ -1,0 +1,9 @@
+[submodule "sumodules/mmsegmentation"]
+	path = sumodules/mmsegmentation
+	url = https://github.com/open-mmlab/mmsegmentation
+[submodule "sumodules/mmpretrain"]
+	path = sumodules/mmpretrain
+	url = https://github.com/open-mmlab/mmpretrain
+[submodule "sumodules/open-cd"]
+	path = sumodules/open-cd
+	url = https://github.com/likyoo/open-cd
