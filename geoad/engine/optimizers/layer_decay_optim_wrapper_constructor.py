@@ -1,0 +1,99 @@
+from typing import List, Optional, Callable
+from mmengine.logging import MMLogger
+from collections import defaultdict
+from mmengine.utils.dl_utils.parrots_wrapper import _BatchNorm, _InstanceNorm
+from torch import nn
+from torch.nn import GroupNorm, LayerNorm
+from mmpretrain.engine import LearningRateDecayOptimWrapperConstructor
+from mmpretrain.registry import OPTIM_WRAPPER_CONSTRUCTORS
+
+@OPTIM_WRAPPER_CONSTRUCTORS.register_module()
+class LearningRateDecayOptimWrapperConstructorV2(LearningRateDecayOptimWrapperConstructor):
+    def add_params(self, params: List[dict], module: nn.Module, prefix: str = '',
+                   get_layer_depth: Optional[Callable] = None, **kwargs) -> None:
+        # get param-wise options
+        custom_keys = self.paramwise_cfg.get('custom_keys', {})
+        # first sort with alphabet order and then sort with reversed len of str
+        sorted_keys = sorted(sorted(custom_keys.keys()), key=len, reverse=True)
+        logger = MMLogger.get_current_instance()
+
+        # The model should have `get_layer_depth` method
+        if get_layer_depth is None and not hasattr(module.backbone, 'get_layer_depth'):
+            raise NotImplementedError('The layer-wise learning rate decay need'
+                                      f' the model {type(module)} has'
+                                      ' `get_layer_depth` method.')
+        else:
+            get_layer_depth = get_layer_depth or module.backbone.get_layer_depth
+
+        bias_decay_mult = self.paramwise_cfg.get('bias_decay_mult', None)
+        norm_decay_mult = self.paramwise_cfg.get('norm_decay_mult', None)
+        flat_decay_mult = self.paramwise_cfg.get('flat_decay_mult', None)
+        decay_rate = self.paramwise_cfg.get('layer_decay_rate', 1.0)
+
+        # special rules for norm layers and depth-wise conv layers
+        is_norm = isinstance(module,
+                             (_BatchNorm, _InstanceNorm, GroupNorm, LayerNorm))
+
+        for name, param in module.named_parameters(recurse=False):
+            param_group = {'params': [param]}
+            param_name = prefix + name
+            if not param.requires_grad:
+                continue
+
+            if self.base_wd is not None:
+                base_wd = self.base_wd
+                custom_key = next(
+                    filter(lambda k: k in param_name, sorted_keys), None)
+                # custom parameters decay
+                if custom_key is not None:
+                    custom_cfg = custom_keys[custom_key].copy()
+                    decay_mult = custom_cfg.pop('decay_mult', 1.)
+
+                    param_group['weight_decay'] = base_wd * decay_mult
+                    # add custom settings to param_group
+                    param_group.update(custom_cfg)
+                # norm decay
+                elif is_norm and norm_decay_mult is not None:
+                    param_group['weight_decay'] = base_wd * norm_decay_mult
+                # bias decay
+                elif name == 'bias' and bias_decay_mult is not None:
+                    param_group['weight_decay'] = base_wd * bias_decay_mult
+                # flatten parameters decay
+                elif param.ndim == 1 and flat_decay_mult is not None:
+                    param_group['weight_decay'] = base_wd * flat_decay_mult
+                else:
+                    param_group['weight_decay'] = base_wd
+
+            layer_id, max_id = get_layer_depth(param_name)
+            scale = decay_rate ** (max_id - layer_id - 1)
+            param_group['lr'] = self.base_lr * scale
+            param_group['lr_scale'] = scale
+            param_group['layer_id'] = layer_id
+            param_group['param_name'] = param_name
+
+            params.append(param_group)
+
+        for child_name, child_mod in module.named_children():
+            child_prefix = f'{prefix}{child_name}.'
+            self.add_params(
+                params,
+                child_mod,
+                prefix=child_prefix,
+                get_layer_depth=get_layer_depth,
+            )
+
+        if prefix == '':
+            layer_params = defaultdict(list)
+            for param in params:
+                layer_params[param['layer_id']].append(param)
+            for layer_id, layer_params in layer_params.items():
+                lr_scale = layer_params[0]['lr_scale']
+                lr = layer_params[0]['lr']
+                msg = [
+                    f'layer {layer_id} params '
+                    f'(lr={lr:.3g}, lr_scale={lr_scale:.3g}):'
+                ]
+                for param in layer_params:
+                    msg.append(f'\t{param["param_name"]}: '
+                               f'weight_decay={param["weight_decay"]:.3g}')
+                logger.debug('\n'.join(msg))

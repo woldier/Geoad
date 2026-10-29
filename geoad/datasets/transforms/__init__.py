@@ -1,0 +1,1 @@
+from .dinov2_processing import DINOv2Transform
