@@ -84,9 +84,9 @@ after that, we link
 <summary>soft link</summary>
 
 ```shell
-ln -s submodules/mmpretrain/mmpretrain mmpretrain
-ln -s submodules/mmsegmentation/mmseg mmseg
-ln -s submodules/open-cd/opencd opencd
+ln -s sumodules/mmpretrain/mmpretrain/ mmpretrain
+ln -s sumodules/mmsegmentation/mmseg/ mmseg
+ln -s sumodules/open-cd/opencd/ opencd
 ```
 </details>
 
