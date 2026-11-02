@@ -1,7 +1,9 @@
 <div align="center">
 
 <h2 style="border-bottom: 1px solid lightgray;">
-Geoad: Towards Geospatial Foundation Models via Efficient Continual Pre-Training
+Geoad: Efficient Continual Pre-Training of Vision Foundation Models 
+  
+  for Optical Remote Sensing
 </h2>
 
 <div style="display: flex; align-items: center; justify-content: center;">
