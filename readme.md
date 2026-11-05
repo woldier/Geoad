@@ -194,9 +194,61 @@ tools/dist_train.sh config/geoad/frms_mae_vit-large-p16_8xb128-amp-coslr-300e_mi
 | NWPU-RESISC45 |                      [Link ](https://gcheng-nwpu.github.io/#Datasets)                      |
 | EuroSat (RGB) |                  [Link ](https://zenodo.org/records/7711810#.ZAm3k-zMKEA)                  |
 
+#### 4.1.2 RESISC45
+
+<details>
+<summary>classification script</summary>
+
+```bash
+# 1. fine-tune
+# Geoad-DINOv2
+tools/dist_train.sh config/classification/resisc45/frms_dinov2_vit-large-p16_8xb128-coslr-100e_resics45.py 8\
+--launcher pytorch --auto-scale-lr
+
+# Geoad-MAE
+tools/dist_train.sh config/classification/resisc45/frms_mae_vit-large-p16_8xb128-coslr-100e_resics45.py 8\
+--launcher pytorch --auto-scale-lr
+
+
+# 2. linear prob
+# Geoad-DINOv2
+tools/dist_train.sh config/classification/resisc45/frms_dinov2_vit-large-p16_8xb1024--linear-coslr-100e_resics45.py 8\
+--launcher pytorch --auto-scale-lr
+
+# Geoad-MAE
+tools/dist_train.sh config/classification/resisc45/frms_mae_vit-large-p16_8xb1024--linear-coslr-100e_resics45.py 8\
+--launcher pytorch --auto-scale-lr
+
+```
+
+</details>
+
+#### 4.1.2 EuroSat
+
+<details>
+<summary>classification script</summary>
+
+```bash
+# 1. fine-tune
+# Geoad-DINOv2
+tools/dist_train.sh config/classification/eurosat/frms_dinov2_vit-large-p16_8xb128-coslr-100e_eurosat.py 8\
+--launcher pytorch --auto-scale-lr
+
+# 2. linear prob
+# Geoad-DINOv2
+tools/dist_train.sh config/classification/eurosat/frms_dinov2_vit-large-p16_8xb1024-linear-coslr-100e_eurosat.py 8\
+--launcher pytorch --auto-scale-lr
+
+
+```
+
+</details>
+
 ### 4.2 Semantic Segmentation
+Coming Soon ...
 
 ### 4.3 Change Detection
+Coming Soon ...
 
 ## Acknowledgements
 
