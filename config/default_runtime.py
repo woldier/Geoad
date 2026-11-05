@@ -49,3 +49,5 @@ resume = False
 
 # Defaults to use random seed and disable `deterministic`
 randomness = dict(seed=None, deterministic=False)
+
+custom_imports = dict(imports=['geoad'], allow_failed_imports=False)

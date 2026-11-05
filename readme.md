@@ -1,7 +1,9 @@
 <div align="center">
 
 <h2 style="border-bottom: 1px solid lightgray;">
-Geoad: Towards Geospatial Foundation Models via Efficient Continual Pre-Training
+Geoad: Efficient Continual Pre-Training of Vision Foundation Models 
+  
+  for Optical Remote Sensing
 </h2>
 
 <div style="display: flex; align-items: center; justify-content: center;">
@@ -25,13 +27,11 @@ Geoad: Towards Geospatial Foundation Models via Efficient Continual Pre-Training
 
 </div>
 
-
 ### 🔍️🔍️ NEWS
-
+- [2025/11/05] ✨✨ Update Pre-Training && Classification Code.
 - [2025/11/17] ✨✨ Init Repo.
 
 [//]: # (- [2025/11/17] ✨✨ The [arxiv] paper will coming soon.)
-
 
 ### 📄📄 TODO
 
@@ -45,7 +45,7 @@ Geoad: Towards Geospatial Foundation Models via Efficient Continual Pre-Training
 We add [mmpretrain](https://github.com/open-mmlab/mmpretrain),
 [mmsegmentation](https://github.com/open-mmlab/mmsegmentation), and
 [open-cd](https://github.com/likyoo/open-cd)
-as our repository 
+as our repository
 [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) .
 
 So, one should clone this repository use the script as follows:
@@ -56,9 +56,10 @@ So, one should clone this repository use the script as follows:
 ```shell
 git clone --recurse-submodules https://github.com/woldier/Geoad
 ```
+
 > ### Tips
 > If one already cloned the project and forgot --recurse-submodules,
-> 
+>
 > ```shell
 >  # cloned the project and forgot clone submodules 🥲🥲
 >  git clone https://github.com/woldier/Geoad 
@@ -66,12 +67,12 @@ git clone --recurse-submodules https://github.com/woldier/Geoad
 >  # initialize and update each submodule in the repository 🥰🥰
 >  git submodule update --init
 >  ```
-> 
+>
 
 </details>
 
 
-after that, we link 
+after that, we link
 
 `submodules/mmpretrain/mmpretrain` $\to$ `mmpretrain`
 
@@ -88,8 +89,8 @@ ln -s sumodules/mmpretrain/mmpretrain/ mmpretrain
 ln -s sumodules/mmsegmentation/mmseg/ mmseg
 ln -s sumodules/open-cd/opencd/ opencd
 ```
-</details>
 
+</details>
 
 ## 1. Creating Virtual Environment
 
@@ -101,7 +102,6 @@ This repo use `python-3.8`, for `nvcc -v` with `cuda >= 11.6`.
 
 <details>
 <summary>Install script</summary>
-
 
 ```shell
 conda create -n  peft-mmpretrain  python==3.8 -y
@@ -118,6 +118,7 @@ pip install -r submodules/mmpretrain/mmpretrain/requirements/runtime.txt
 pip install -r submodules/mmsegmentation/mmseg/requirements/runtime.txt
 pip install -r submodules/open-cd/opencd/requirements/runtime.txt
 ```
+
 </details>
 
 Installation of the reference document refer:
@@ -127,14 +128,84 @@ Torch and torchvision versions relationship.
 [![Official Repo](https://img.shields.io/badge/Pytorch-vision_refer-EE4C2C?logo=pytorch)](https://github.com/pytorch/vision#installation)
 [![CSDN](https://img.shields.io/badge/CSDN-vision_refer-FC5531?logo=csdn)](https://blog.csdn.net/shiwanghualuo/article/details/122860521)
 
+## 2. Initialization Checkpoints
 
+Geoad relies on model weights from DINOv2 and MAE as an initialization to begin continual pre-training.
+We have organized them here for your convenience.
 
+| Model  |                                                                                      ViT-L                                                                                       |
+|--------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| DINOv2 |                            [ViT-L/14](https://download.openmmlab.com/mmpretrain/v1.0/dinov2/vit-large-p14_dinov2-pre_3rdparty_20230426-f3302d9e.pth)                             |
+| MAE    | [ViT-L/16](https://download.openmmlab.com/mmselfsup/1.x/mae/mae_vit-large-p16_8xb512-fp16-coslr-1600e_in1k/mae_vit-large-p16_8xb512-fp16-coslr-1600e_in1k_20220825-cc7e98c9.pth) |
+
+## 3. Continual Pre-Training
+
+### 3.1 Pre-training Dataset Preparation
+
+Download the [MillionAID](https://jin-pu.github.io/Million-AID/) dataset. The data structure should be as follows:
+
+```text
+├── data/MillionAID
+│   ├── train
+│   │   ├── agriculture
+│   │   │   ├── arable_land
+│   │   │   │   ├── dry_field
+│   │   │   │   │   ├── P0011232.jpg
+│   │   │   │   │   ├── ...
+│   │   │   │   ├── ...
+│   │   │   ├── ...
+│   │   ├── ...
+│   ├── test
+│   │   ├── xxx.jpg
+│   │   ├── xxx.jpg
+│   │   ├── ...
+│   ├── ...
+```
+
+We use all the images in the training and test sets for pretraining.
+
+### 3.2 Geoad Pre-training
+
+To pre-train Geoad with multi-gpu distributed training, run the following on 1 nodes with 8 GPUs each:
+
+<details>
+<summary>pretraining script</summary>
+
+```bash
+# Geoad-DINOv2
+tools/dist_train.sh config/geoad/frms_dinov2_vit-large-p14_8xb512-amp-coslr-100k_million-aid.py 8\
+--launcher pytorch --auto-scale-lr
+
+# Geoad-MAE
+tools/dist_train.sh config/geoad/frms_mae_vit-large-p16_8xb128-amp-coslr-300e_million-aid.py 8\
+--launcher pytorch --auto-scale-lr
+```
+
+</details>
+
+## 4. Downstream Tasks
+
+### 4.1 Sense Classification
+
+#### 4.1.1 Dataset Preparation
+
+| Dataset       |                                            Link                                            |
+|---------------|:------------------------------------------------------------------------------------------:|
+| NWPU-RESISC45 |                      [Link ](https://gcheng-nwpu.github.io/#Datasets)                      |
+| EuroSat (RGB) |                  [Link ](https://zenodo.org/records/7711810#.ZAm3k-zMKEA)                  |
+
+### 4.2 Semantic Segmentation
+
+### 4.3 Change Detection
 
 ## Acknowledgements
+
 This project is built upon [OpenMMLab](https://openmmlab.com/codebase). We thank the OpenMMLab developers.
 
 ## Citation
+
 If you use Geoad in your research, please cite:
+
 ```bibtex
 @article{,
   title={},
