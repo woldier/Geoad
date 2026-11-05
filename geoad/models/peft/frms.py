@@ -168,7 +168,7 @@ class FRMsVisionTransformer(VisionTransformer):
             >>>     link_token_to_query=True,
             >>>     ),
     """ # noqa
-    def __init__(self, frms_config: ConfigType, unfreeze:list=[], freeze_rein =False, **kwargs):
+    def __init__(self, frms_config: ConfigType, unfreeze:list=[], freeze_frms =False, **kwargs):
         super().__init__(**kwargs)
         if self.frozen_stages == -1:
             self.frozen_stages = len(self.layers)
@@ -184,7 +184,7 @@ class FRMsVisionTransformer(VisionTransformer):
             print_log(f'Using FRMsLoRA', logger='current')
         else:
             self.frms: FRMs = FRMs(**frms_config)
-        if freeze_rein:
+        if freeze_frms:
             print_log(f'freeze frms', logger='current')
             for p in self.frms.parameters():
                 p.requires_grad = False
