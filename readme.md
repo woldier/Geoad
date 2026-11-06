@@ -145,6 +145,9 @@ We have organized them here for your convenience.
 
 Download the [MillionAID](https://jin-pu.github.io/Million-AID/) dataset. The data structure should be as follows:
 
+<details>
+<summary>file structure</summary>
+
 ```text
 ├── data/MillionAID
 │   ├── train
@@ -162,6 +165,8 @@ Download the [MillionAID](https://jin-pu.github.io/Million-AID/) dataset. The da
 │   │   ├── ...
 │   ├── ...
 ```
+
+</details>
 
 We use all the images in the training and test sets for pretraining.
 
@@ -192,8 +197,36 @@ tools/dist_train.sh config/geoad/frms_mae_vit-large-p16_8xb128-amp-coslr-300e_mi
 
 | Dataset       |                           Link                           | Split                                                                                          |
 |---------------|:--------------------------------------------------------:|------------------------------------------------------------------------------------------------|
-| NWPU-RESISC45 |     [Link ](https://gcheng-nwpu.github.io/#Datasets)     | -                                                                                              |
+| NWPU-RESISC45 |     [Link ](https://gcheng-nwpu.github.io/#Datasets)     | [resisc45.zip](https://github.com/woldier/Geoad/releases/download/v0.1/resisc45.zip)           |
 | EuroSat (RGB) | [Link ](https://zenodo.org/records/7711810#.ZAm3k-zMKEA) | [eurosat-split.zip](https://github.com/woldier/Geoad/releases/download/v0.1/eurosat-split.zip) |
+|               |                                                          |                                                                                                |
+<details>
+<summary>file structure</summary>
+
+```text
+├── data/NWPU-RESISC45
+│   ├── airplane
+│   │   ├── airplane_001.jpg
+│   │   ├── airplane_002.jpg
+│   │   ├── ...
+│   ├── airport
+│   ├── ...
+│   ├── ratio_0.5_train.txt
+│   ├── ratio_0.5_test.txt
+├── data/EuroSAT_RGB
+│   ├── AnnualCrop
+│   │   ├── AnnualCrop_1.jpg
+│   │   ├── AnnualCrop_2.jpg
+│   │   ├── ...
+│   ├── Forest
+│   ├── HerbaceousVegetation
+│   ├── ...
+│   ├── eurosat-train.txt
+│   ├── eurosat-test.txt
+│   ├── eurosat-val.txt
+```
+
+</details>
 
 #### 4.1.2 RESISC45
 
