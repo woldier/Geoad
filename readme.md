@@ -2,8 +2,8 @@
 
 <h2 style="border-bottom: 1px solid lightgray;">
 Geoad: Efficient Continual Pre-Training of Vision Foundation Models 
-  
-  for Optical Remote Sensing
+
+for Optical Remote Sensing
 </h2>
 
 <div style="display: flex; align-items: center; justify-content: center;">
@@ -28,6 +28,7 @@ Geoad: Efficient Continual Pre-Training of Vision Foundation Models
 </div>
 
 ### 🔍️🔍️ NEWS
+
 - [2025/11/05] ✨✨ Update Pre-Training && Classification Code.
 - [2025/11/17] ✨✨ Init Repo.
 
@@ -189,10 +190,10 @@ tools/dist_train.sh config/geoad/frms_mae_vit-large-p16_8xb128-amp-coslr-300e_mi
 
 #### 4.1.1 Dataset Preparation
 
-| Dataset       |                                            Link                                            |
-|---------------|:------------------------------------------------------------------------------------------:|
-| NWPU-RESISC45 |                      [Link ](https://gcheng-nwpu.github.io/#Datasets)                      |
-| EuroSat (RGB) |                  [Link ](https://zenodo.org/records/7711810#.ZAm3k-zMKEA)                  |
+| Dataset       |                           Link                           | Split                                                                                          |
+|---------------|:--------------------------------------------------------:|------------------------------------------------------------------------------------------------|
+| NWPU-RESISC45 |     [Link ](https://gcheng-nwpu.github.io/#Datasets)     | -                                                                                              |
+| EuroSat (RGB) | [Link ](https://zenodo.org/records/7711810#.ZAm3k-zMKEA) | [eurosat-split.zip](https://github.com/woldier/Geoad/releases/download/v0.1/eurosat-split.zip) |
 
 #### 4.1.2 RESISC45
 
@@ -245,9 +246,11 @@ tools/dist_train.sh config/classification/eurosat/frms_dinov2_vit-large-p16_8xb1
 </details>
 
 ### 4.2 Semantic Segmentation
+
 Coming Soon ...
 
 ### 4.3 Change Detection
+
 Coming Soon ...
 
 ## Acknowledgements
